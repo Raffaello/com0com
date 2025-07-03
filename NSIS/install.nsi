@@ -120,27 +120,31 @@
 
 ;--------------------------------
 
+!ifndef BASE_DIR
+	!define BASE_DIR "..\out"
+!endif
+
 !ifndef OUTPUT_FILE
   !ifndef ADD_TARGET_CPU_i386
     !ifndef ADD_TARGET_CPU_amd64
       !ifndef ADD_TARGET_CPU_ia64
         !if "$%BUILD_DEFAULT_TARGETS%" == "-386"
-          !define OUTPUT_FILE "..\i386\setup.exe"
+          !define OUTPUT_FILE "${BASE_DIR}\i386\setup.exe"
           !define ADD_TARGET_CPU_i386
         !else if "$%BUILD_DEFAULT_TARGETS%" == "-AMD64"
-          !define OUTPUT_FILE "..\amd64\setup.exe"
+          !define OUTPUT_FILE "${BASE_DIR}\amd64\setup.exe"
           !define ADD_TARGET_CPU_amd64
         !else if "$%BUILD_DEFAULT_TARGETS%" == "-amd64"
-          !define OUTPUT_FILE "..\amd64\setup.exe"
+          !define OUTPUT_FILE "${BASE_DIR}\amd64\setup.exe"
           !define ADD_TARGET_CPU_amd64
         !else if "$%BUILD_DEFAULT_TARGETS%" == "-IA64"
-          !define OUTPUT_FILE "..\ia64\setup.exe"
+          !define OUTPUT_FILE "${BASE_DIR}\ia64\setup.exe"
           !define ADD_TARGET_CPU_ia64
         !else if "$%BUILD_DEFAULT_TARGETS%" == "-ia64"
-          !define OUTPUT_FILE "..\ia64\setup.exe"
+          !define OUTPUT_FILE "${BASE_DIR}\ia64\setup.exe"
           !define ADD_TARGET_CPU_ia64
         !else
-          !define OUTPUT_FILE "..\i386\setup.exe"
+          !define OUTPUT_FILE "${BASE_DIR}\i386\setup.exe"
           !define ADD_TARGET_CPU_i386
           !Warning "Using target CPU i386"
         !endif
@@ -359,10 +363,10 @@ ShowUninstDetails show
       SetOutPath $INSTDIR
 
       ; Put target cpu files there
-      File "..\${cpu}\com0com.sys"
-      File /nonfatal "..\${cpu}\com0com.cat"
-      File "..\${cpu}\setup.dll"
-      File "..\${cpu}\setupc.exe"
+      File "${BASE_DIR}\${cpu}\com0com.sys"
+      File /nonfatal "${BASE_DIR}\${cpu}\com0com.cat"
+      File "${BASE_DIR}\${cpu}\setup.dll"
+      File "${BASE_DIR}\${cpu}\setupc.exe"
 
     SectionEnd
 
@@ -372,9 +376,10 @@ ShowUninstDetails show
 
 ;--------------------------------
 
-!insertmacro CpuSection i386
+#!insertmacro CpuSection i386
 !insertmacro CpuSection amd64
-!insertmacro CpuSection ia64
+#!insertmacro CpuSection ia64
+
 
 ;--------------------------------
 

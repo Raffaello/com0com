@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <msclr/marshal.h> // Ensure .NET Framework headers are included
 
 using namespace System;
 using namespace System::Reflection;
