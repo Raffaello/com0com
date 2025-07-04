@@ -333,7 +333,7 @@ Name "Null-modem emulator (com0com)"
 OutFile "${OUTPUT_FILE}"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\com0com
+InstallDir $PROGRAMFILES64\com0com
 
 ; Registry key to check for directory (so if you install again, it will
 ; overwrite the old one automatically)

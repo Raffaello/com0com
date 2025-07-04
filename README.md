@@ -31,6 +31,11 @@ pvk2pfx -pvk com0com.pvk -spc com0com.cer -pfx com0com.pfx
 signtool sign /v /fd SHA256 /f com0com.pfx /t "http://timestamp.digicert.com" ..\out\build\x64-Release\sys\com0com.sys
 ```
 
+Then add the self-signed certificate to the certifcate manager in to the trusted root certificates:
+```ps
+CertMgr /add com0com.cer /s /r localMachine root
+```
+ref: https://learn.microsoft.com/en-us/windows-hardware/drivers/install/makecert-test-certificate#installing-a-makecert-test-certificate
 
 ## create .CAT file
 
@@ -49,7 +54,7 @@ And is located in `C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x86\I
 - `comport.inf`
 - `com0com.inf`
 - `Readme.txt`
-- `License.txt`
+- `license.txt`
 
 
 4. Then from the `amd64` folder run:
