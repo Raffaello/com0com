@@ -1,5 +1,8 @@
-#cmake_minimum_required(VERSION 3.15)
-#project(setupg LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.17)
+
+# Enable C++14
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Source files
 set(SOURCES
@@ -13,47 +16,26 @@ set(SOURCES
     com0com.ico
 )
 
+set(HEADERS
+    exec.h
+    Form1.h
+    pinmap.h
+    portprms.h
+    resource.h
+)
+
 # Precompiled header
 set(PCH_HEADER stdafx.h)
 set(PCH_SOURCE stdafx.cpp)
 
 # Add executable
-add_executable(setupg WIN32 ${SOURCES})
+add_executable(setupg ${SOURCES} ${HEADERS})
 
-# Precompiled headers (CMake 3.16+)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.16")
-    target_precompile_headers(setupg PRIVATE ${PCH_HEADER})
-endif()
+target_precompile_headers(setupg PRIVATE ${PCH_HEADER})
 
-# Set preprocessor definitions
-target_compile_definitions(setupg PRIVATE WIN32)
-
-# Set output name and subsystem
-set_target_properties(setupg PROPERTIES
-    OUTPUT_NAME "setupg"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>"
-    #LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:main"
-)
-
-# Add .NET references (for C++/CLI Windows Forms)
-#target_link_libraries(setupg PRIVATE
-#    "System.lib"
-#    "System.Data.lib"
-#    "System.Drawing.lib"
-#    "System.Windows.Forms.lib"
-#    "System.Xml.lib"
-#)
 
 # Include directories
 target_include_directories(setupg PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-
-#target_link_libraries(setupg PRIVATE
-#    "System.dll"
-#    "System.Data.dll"
-#    "System.Drawing.dll"
-#    "System.Windows.Forms.dll"
-#    "System.XML.dll"
-#)
 
 # Resource file handling (if needed)
 # CMake will handle .rc files automatically for MSVC
@@ -66,23 +48,21 @@ else()
 endif()
 
 
-#target_compile_options(setupg PRIVATE /clr)
-#target_compile_options(setupg PRIVATE /fp:precise) # /fp:strict is
-
-set_property(TARGET setupg PROPERTY VS_GLOBAL_ROOTNAMESPACE setupg)
-set_property(TARGET setupg PROPERTY VS_GLOBAL_KEYWORD "ManagedCProj")
-set_property(TARGET setupg PROPERTY VS_GLOBAL_CLRSupport "true")
-set_property(TARGET setupg PROPERTY VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.0")
-set_property(TARGET setupg PROPERTY VS_DOTNET_REFERENCES "System" "System.Data" "System.Drawing" "System.Windows.Forms" "System.Xml")
+set_target_properties(setupg PROPERTIES
+    COMMON_LANGUAGE_RUNTIME ""
+    VS_GLOBAL_ROOTNAMESPACE setupg
+    VS_GLOBAL_KEYWORD "ManagedCProj"
+    VS_GLOBAL_CLRSupport "true"
+    VS_DOTNET_REFERENCES "System;System.Windows;System.Windows.Forms;System.Drawing;System.Data"
+    
+    #DOTNET_TARGET_FRAMEWORK "v4.7.2"
+    #VS_DOTNET_REFERENCES "System" "System.Data" "System.Drawing" "System.Windows.Forms" "System.Xml"
+)
 
 # Include .NET-related libraries (if needed)
 # For example, if you're using C++/CLI for .NET interop:
 if(MSVC)
     message("MSVC....")
-    #set_target_properties(setupg PROPERTIES
-    #    COMMON_LANGUAGE_RUNTIME "clr"
-    #)
-    set_target_properties(setupg PROPERTIES COMMON_LANGUAGE_RUNTIME "")
 
     # Remove /RTC and /EH flags from global flags
     string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")

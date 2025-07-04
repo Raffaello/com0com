@@ -37,24 +37,17 @@ set(SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/c0clog.rc
     #${CMAKE_CURRENT_SOURCE_DIR}/c0clog.bin
 
-    ${CAT_OUTPUT}
+    #${CAT_OUTPUT}
 )
 
 add_custom_command(
-    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/c0clog.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/c0clog.rc
-            ${CMAKE_CURRENT_SOURCE_DIR}/c0clog.bin
+    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/c0clog.h
+            ${CMAKE_CURRENT_BINARY_DIR}/c0clog.rc
+            ${CMAKE_CURRENT_BINARY_DIR}/c0clog.bin
     COMMAND mc ${CMAKE_CURRENT_SOURCE_DIR}/c0clog.mc
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/c0clog.mc
     COMMENT "Compiling c0clog.mc with mc.exe"
 )
-
-# Add a custom target to invoke the command
-#add_custom_target(generate_cat ALL
-#    DEPENDS "${CAT_OUTPUT}"
-#    COMMENT "Generate .cat file for Windows driver"
-#)
-
 
 wdk_add_driver(
     com0com
@@ -67,16 +60,12 @@ wdk_add_driver(
 
 target_include_directories(com0com PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-#target_link_libraries(${PROJECT} PRIVATE
-#    WdfDriverEntry.lib
-#)
-
 # Get the directory of the INF file
 get_filename_component(DRIVER_INF_DIR "${DRIVER_INF}" DIRECTORY)
 
 #add_custom_command(TARGET com0com POST_BUILD
 #    #OUTPUT "${CAT_OUTPUT}"
 #    COMMAND inf2cat /driver:"${DRIVER_INF_DIR}" /os:10_X64 /verbose
-#    #DEPENDS "${DRIVER_INF}"
-#   COMMENT "Generating catalog (.cat) file for driver"
+#    DEPENDS "${DRIVER_INF}"
+#    COMMENT "Generating catalog (.cat) file for driver"
 #)
