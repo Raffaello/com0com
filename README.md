@@ -2,6 +2,14 @@
 
 This project has been modernized to be compiled through `cmake`.
 
+This will support only x64 Windows 10 and later.
+
+For odler system use older versions.
+
+The generator required is `Visual Studio` due to the actual CMake/Ninja not able to compile .NET (are you sure?)
+
+
+
 ## Pre-requisites
 
 - WDK (Window Driver Kit) to be installed.

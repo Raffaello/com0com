@@ -1,3 +1,10 @@
+V4.0.0.0 (2025-07-??)
+
+* Supporting only x64 Windows 10 OS and later
+* Using CMake to build through Visual Studio Generator (forced due to c++/CLR)
+* UI is now targeting modern .net Framework
+* The driver is self-signed for testing purposes.
+
 v3.0.0.0 (2012-06-04)
 
 * Added ability to put the port to the Ports class.
