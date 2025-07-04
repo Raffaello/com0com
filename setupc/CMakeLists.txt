@@ -21,14 +21,15 @@ add_executable(setupc ${SOURCES})
 
 # Architecture-specific library path logic
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(SETUP_LIB_PATH "${CMAKE_BINARY_DIR}/../../amd64/setup.lib")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(IA64|ia64)$")
-    set(SETUP_LIB_PATH "${CMAKE_BINARY_DIR}/../../ia64/setup.lib")
+    #set(SETUP_LIB_PATH "${CMAKE_BINARY_DIR}/setup.lib")
+#elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(IA64|ia64)$")
+#    set(SETUP_LIB_PATH "${CMAKE_BINARY_DIR}/../../ia64/setup.lib")
 else()
-    set(SETUP_LIB_PATH "${CMAKE_BINARY_DIR}/../../i386/setup.lib")
+    #set(SETUP_LIB_PATH "${CMAKE_BINARY_DIR}/../../i386/setup.lib")
+    message(FATAL_ERROR "support only x64")
 endif()
 
-target_link_libraries(setupc PRIVATE "${SETUP_LIB_PATH}")
+target_link_libraries(setupc PRIVATE setup)
 
 # Set output directory if needed
 # set_target_properties(setupc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/..")

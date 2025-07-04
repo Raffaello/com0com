@@ -17,8 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
  * $Log: install.nsi,v $
+ * Revision 2.0  2011/12/18 16:42:23  raffaello bertini
+ * Dropped support for 32-bits
+ *
  * Revision 1.25  2011/12/18 16:42:23  vfrolov
  * Added ability to build installer with both 32-bit and 64-bit drivers
  *
@@ -124,37 +126,35 @@
 	!define BASE_DIR "..\out"
 !endif
 
-!ifndef OUTPUT_FILE
-  !ifndef ADD_TARGET_CPU_i386
-    !ifndef ADD_TARGET_CPU_amd64
-      !ifndef ADD_TARGET_CPU_ia64
-        !if "$%BUILD_DEFAULT_TARGETS%" == "-386"
-          !define OUTPUT_FILE "${BASE_DIR}\i386\setup.exe"
-          !define ADD_TARGET_CPU_i386
-        !else if "$%BUILD_DEFAULT_TARGETS%" == "-AMD64"
-          !define OUTPUT_FILE "${BASE_DIR}\amd64\setup.exe"
-          !define ADD_TARGET_CPU_amd64
-        !else if "$%BUILD_DEFAULT_TARGETS%" == "-amd64"
-          !define OUTPUT_FILE "${BASE_DIR}\amd64\setup.exe"
-          !define ADD_TARGET_CPU_amd64
-        !else if "$%BUILD_DEFAULT_TARGETS%" == "-IA64"
-          !define OUTPUT_FILE "${BASE_DIR}\ia64\setup.exe"
-          !define ADD_TARGET_CPU_ia64
-        !else if "$%BUILD_DEFAULT_TARGETS%" == "-ia64"
-          !define OUTPUT_FILE "${BASE_DIR}\ia64\setup.exe"
-          !define ADD_TARGET_CPU_ia64
-        !else
-          !define OUTPUT_FILE "${BASE_DIR}\i386\setup.exe"
-          !define ADD_TARGET_CPU_i386
-          !Warning "Using target CPU i386"
-        !endif
-      !endif
-    !endif
-  !endif
+!ifndef FILENAME
+	!define FILENAME "com0com_v4.0.0_w10_x64_signed.exe"
 !endif
 
 !ifndef OUTPUT_FILE
-  !Error "Not defined OUTPUT_FILE"
+	!ifndef ADD_TARGET_CPU_amd64
+		!if "$%BUILD_DEFAULT_TARGETS%" == "-AMD64"
+          !define OUTPUT_FILE "${BASE_DIR}\amd64\${FILENAME}"
+          !define ADD_TARGET_CPU_amd64
+        !else if "$%BUILD_DEFAULT_TARGETS%" == "-amd64"
+          !define OUTPUT_FILE "${BASE_DIR}\amd64\${FILENAME}"
+          !define ADD_TARGET_CPU_amd64
+        !else
+          !define OUTPUT_FILE "${BASE_DIR}\amd64\${FILENAME}"
+          !define ADD_TARGET_CPU_amd64
+        !endif
+    !endif
+!endif
+
+!ifndef OUTPUT_FILE
+	!error "Not defined OUTPUT_FILE"
+!endif
+
+!ifdef ADD_TARGET_CPU_i386
+	!error "i386 (x86) architecture is not supported anymore. Use an older version instead.
+!endif
+
+!ifdef ADD_TARGET_CPU_ia64
+	!error "ia64 architecture is not supporeted anymore. Use an older version intead.
 !endif
 
 ;--------------------------------
@@ -186,7 +186,7 @@ Function AdviseDotNETVersion
   Call GetDotNETVersion
   Pop $0
 
-  StrCpy $1 "2.0"
+  StrCpy $1 "4.7.2"
 
   ${VersionCompare} $0 $1 $2
   ${If} $2 == 2
@@ -289,6 +289,42 @@ FunctionEnd
 
 ;--------------------------------
 
+!macro CpuSection cpu
+
+  !ifdef ADD_TARGET_CPU_${cpu}
+
+    ;!Warning "Adding CPU ${cpu}"
+
+    Section /o "-com0com ${cpu}" sec_com0com_${cpu}
+
+    ; Set output path to the installation directory.
+    SetOutPath $INSTDIR
+
+    ; Put target cpu files there
+    File "${BASE_DIR}\${cpu}\com0com.sys"
+    File /nonfatal "${BASE_DIR}\${cpu}\com0com.cat"
+    File "${BASE_DIR}\${cpu}\setup.dll"
+    File "${BASE_DIR}\${cpu}\setupc.exe"
+	File "${BASE_DIR}\${cpu}\setupg.exe"
+	File "${BASE_DIR}\${cpu}\ReadMe.txt"
+	File "${BASE_DIR}\${cpu}\com0com.inf"
+	File "${BASE_DIR}\${cpu}\cncport.inf"
+	File "${BASE_DIR}\${cpu}\comport.inf"
+	File "${BASE_DIR}\${cpu}\comport.inf"
+	File "${BASE_DIR}\${cpu}\com0com.cat"
+
+    SectionEnd
+
+  !endif
+
+!macroend
+
+;--------------------------------
+
+!insertmacro CpuSection amd64
+
+;--------------------------------
+
 ; The name of the installer
 Name "Null-modem emulator (com0com)"
 
@@ -329,7 +365,7 @@ ShowUninstDetails show
   !define MUI_FINISHPAGE_NOAUTOCLOSE
 
   !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE "..\license.txt"
+  !insertmacro MUI_PAGE_LICENSE "${BASE_DIR}\..\license.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
@@ -351,37 +387,6 @@ ShowUninstDetails show
 
 ;--------------------------------
 
-!macro CpuSection cpu
-
-  !ifdef ADD_TARGET_CPU_${cpu}
-
-    ;!Warning "Adding CPU ${cpu}"
-
-    Section /o "-com0com ${cpu}" sec_com0com_${cpu}
-
-      ; Set output path to the installation directory.
-      SetOutPath $INSTDIR
-
-      ; Put target cpu files there
-      File "${BASE_DIR}\${cpu}\com0com.sys"
-      File /nonfatal "${BASE_DIR}\${cpu}\com0com.cat"
-      File "${BASE_DIR}\${cpu}\setup.dll"
-      File "${BASE_DIR}\${cpu}\setupc.exe"
-
-    SectionEnd
-
-  !endif
-
-!macroend
-
-;--------------------------------
-
-#!insertmacro CpuSection i386
-!insertmacro CpuSection amd64
-#!insertmacro CpuSection ia64
-
-
-;--------------------------------
 
 Section "com0com" sec_com0com
 
@@ -391,11 +396,11 @@ Section "com0com" sec_com0com
   SetOutPath $INSTDIR
 
   ; Put files there
-  File "..\ReadMe.txt"
-  File "..\com0com.inf"
-  File "..\cncport.inf"
-  File "..\comport.inf"
-  File "..\setupg\Release\setupg.exe"
+  #File "${BASE_DIR}\..\ReadMe.txt"
+  #File "${BASE_DIR}\..\com0com.inf"
+  #File "${BASE_DIR}\..\cncport.inf"
+  #File "${BASE_DIR}\..\comport.inf"
+  
 
   WriteUninstaller "uninstall.exe"
 
@@ -514,7 +519,7 @@ Function .onInit
 
   ; Check CPU
 
-  ${If} ${RunningX64}
+#  ${If} ${RunningX64}
     !ifdef ADD_TARGET_CPU_amd64
       SectionGetFlags ${sec_com0com_amd64} $0
       IntOp $0 $0 | ${SF_SELECTED}
@@ -525,22 +530,13 @@ Function .onInit
         /SD IDNO IDYES +2
       Abort
     !endif
-  ${Else}
-    !ifdef ADD_TARGET_CPU_i386
-      SectionGetFlags ${sec_com0com_i386} $0
-      IntOp $0 $0 | ${SF_SELECTED}
-      SectionSetFlags ${sec_com0com_i386} $0
-    !else
-      MessageBox MB_YESNO|MB_DEFBUTTON2|MB_ICONEXCLAMATION \
-        "This package does not include 32-bit driver required for your system.$\n$\nContinue?" \
-        /SD IDNO IDYES +2
-      Abort
-    !endif
-  ${EndIf}
+#  ${Else}
+#    !error "x86 is not supported anymore"
+  #${EndIf}
 
   ; Check Windows version
 
-  ${IfNot} ${AtLeastWin2000}
+  ${IfNot} ${AtLeastWin7}
     MessageBox MB_YESNO|MB_DEFBUTTON2|MB_ICONEXCLAMATION \
       "The driver cannot run under below Windows 2000 System.$\n$\nContinue?" \
       /SD IDNO IDYES +2
