@@ -33,6 +33,9 @@ Follow these step for building
 
 ## Self-signing Driver
 
+Pre-requisites: [link](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/kernel-mode-code-signing-policy--windows-vista-and-later-)
+
+
 go in the `certs` dir and run:
 
 ```ps
