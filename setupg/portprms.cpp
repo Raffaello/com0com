@@ -46,8 +46,8 @@ PortParams::PortParams(String ^str)
   array<String ^> ^prms = str->Split(separator, StringSplitOptions::RemoveEmptyEntries);;
 
   for (int i = 0 ; i < prms->Length ; i++) {
-    array<Char> ^separator = {'='};
-    array<String ^> ^prm = prms[i]->Split(separator);
+    array<Char> ^separator2 = {'='};
+    array<String ^> ^prm = prms[i]->Split(separator2);
 
     if (prm->Length == 2) {
       this[prm[0]->ToLower()] = prm[1]->ToUpper();

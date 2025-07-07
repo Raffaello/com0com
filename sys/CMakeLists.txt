@@ -1,14 +1,12 @@
-# Set your driver and INF file names
 set(DRIVER_INF "${PROJECT_SOURCE_DIR}/com0com.inf")
 set(CAT_OUTPUT "${CMAKE_BINARY_DIR}/com0com.cat")
 
-
 set(SOURCES
-    initunlo.c 
-    adddev.c 
-    showport.c 
-    openclos.c 
-    pnp.c 
+    initunlo.c
+    adddev.c
+    showport.c
+    openclos.c
+    pnp.c
     power.c
     ioctl.c
     wmi.c
@@ -51,7 +49,6 @@ add_custom_command(
 
 wdk_add_driver(
     com0com
-    #EXCLUDE_FROM_ALL
     KMDF 1.15 # windows 10 (https://learn.microsoft.com/en-us/windows-hardware/drivers/wdf/kmdf-version-history
     #KMDF 1.3
     WINVER ${WDK_WINVER}
