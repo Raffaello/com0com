@@ -17,9 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ *
  * $Log: install.nsi,v $
  * Revision 2.0  2011/12/18 16:42:23  raffaello bertini
- * Dropped support for 32-bits
+ * Dropped support for 32-bits and IA64. supporting only x64
  *
  * Revision 1.25  2011/12/18 16:42:23  vfrolov
  * Added ability to build installer with both 32-bit and 64-bit drivers
@@ -123,38 +124,44 @@
 ;--------------------------------
 
 !ifndef BASE_DIR
-	!define BASE_DIR "..\out"
+    !define BASE_DIR "..\out"
 !endif
 
 !ifndef FILENAME
-	!define FILENAME "com0com_v4.0.0_w10_x64_signed.exe"
+    !define FILENAME "com0com_v4.0.0_w10_x64_signed.exe"
 !endif
 
 !ifndef OUTPUT_FILE
-	!ifndef ADD_TARGET_CPU_amd64
-		!if "$%BUILD_DEFAULT_TARGETS%" == "-AMD64"
-          !define OUTPUT_FILE "${BASE_DIR}\amd64\${FILENAME}"
+    !ifndef ADD_TARGET_CPU_amd64
+        !if "$%BUILD_DEFAULT_TARGETS%" == "-AMD64"
           !define ADD_TARGET_CPU_amd64
+          !define CPU_DIR "amd64"
         !else if "$%BUILD_DEFAULT_TARGETS%" == "-amd64"
-          !define OUTPUT_FILE "${BASE_DIR}\amd64\${FILENAME}"
           !define ADD_TARGET_CPU_amd64
+          !define CPU_DIR "amd64"
         !else
-          !define OUTPUT_FILE "${BASE_DIR}\amd64\${FILENAME}"
           !define ADD_TARGET_CPU_amd64
+          !define CPU_DIR "amd64"
         !endif
     !endif
+    
+    !define OUTPUT_FILE "${BASE_DIR}\${CPU_DIR}\${FILENAME}"
 !endif
 
 !ifndef OUTPUT_FILE
-	!error "Not defined OUTPUT_FILE"
+    !error "Not defined OUTPUT_FILE"
+!endif
+
+!ifndef CPU_DIR
+    !error "CPU_DIR not defined"
 !endif
 
 !ifdef ADD_TARGET_CPU_i386
-	!error "i386 (x86) architecture is not supported anymore. Use an older version instead.
+    !error "i386 (x86) architecture is not supported anymore. Use an older version instead.
 !endif
 
 !ifdef ADD_TARGET_CPU_ia64
-	!error "ia64 architecture is not supporeted anymore. Use an older version intead.
+    !error "ia64 architecture is not supporeted anymore. Use an older version intead.
 !endif
 
 ;--------------------------------
@@ -305,13 +312,13 @@ FunctionEnd
     File /nonfatal "${BASE_DIR}\${cpu}\com0com.cat"
     File "${BASE_DIR}\${cpu}\setup.dll"
     File "${BASE_DIR}\${cpu}\setupc.exe"
-	File "${BASE_DIR}\${cpu}\setupg.exe"
-	File "${BASE_DIR}\${cpu}\ReadMe.txt"
-	File "${BASE_DIR}\${cpu}\com0com.inf"
-	File "${BASE_DIR}\${cpu}\cncport.inf"
-	File "${BASE_DIR}\${cpu}\comport.inf"
-	File "${BASE_DIR}\${cpu}\comport.inf"
-	File "${BASE_DIR}\${cpu}\com0com.cat"
+    File "${BASE_DIR}\${cpu}\setupg.exe"
+    File "${BASE_DIR}\${cpu}\ReadMe.txt"
+    File "${BASE_DIR}\${cpu}\com0com.inf"
+    File "${BASE_DIR}\${cpu}\cncport.inf"
+    File "${BASE_DIR}\${cpu}\comport.inf"
+    File "${BASE_DIR}\${cpu}\comport.inf"
+    File "${BASE_DIR}\${cpu}\com0com.cat"
 
     SectionEnd
 
@@ -321,7 +328,7 @@ FunctionEnd
 
 ;--------------------------------
 
-!insertmacro CpuSection amd64
+!insertmacro CpuSection ${CPU_DIR}
 
 ;--------------------------------
 
@@ -365,7 +372,7 @@ ShowUninstDetails show
   !define MUI_FINISHPAGE_NOAUTOCLOSE
 
   !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE "${BASE_DIR}\..\license.txt"
+  !insertmacro MUI_PAGE_LICENSE "${BASE_DIR}\${CPU_DIR}\license.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
@@ -394,13 +401,6 @@ Section "com0com" sec_com0com
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
-
-  ; Put files there
-  #File "${BASE_DIR}\..\ReadMe.txt"
-  #File "${BASE_DIR}\..\com0com.inf"
-  #File "${BASE_DIR}\..\cncport.inf"
-  #File "${BASE_DIR}\..\comport.inf"
-  
 
   WriteUninstaller "uninstall.exe"
 
@@ -519,6 +519,7 @@ Function .onInit
 
   ; Check CPU
 
+   # commented out as RunninX64 doesn't work
 #  ${If} ${RunningX64}
     !ifdef ADD_TARGET_CPU_amd64
       SectionGetFlags ${sec_com0com_amd64} $0
@@ -534,11 +535,11 @@ Function .onInit
 #    !error "x86 is not supported anymore"
   #${EndIf}
 
+    # NSIS Doesn't support Windows 10 checks  
   ; Check Windows version
-
   ${IfNot} ${AtLeastWin7}
     MessageBox MB_YESNO|MB_DEFBUTTON2|MB_ICONEXCLAMATION \
-      "The driver cannot run under below Windows 2000 System.$\n$\nContinue?" \
+      "The driver cannot run under below Windows 10 System.$\n$\nContinue?" \
       /SD IDNO IDYES +2
     Abort
   ${EndIf}
@@ -574,7 +575,7 @@ FunctionEnd
 ;--------------------------------
 
 Function .onInstSuccess
-  Call AdviseDotNETVersion
+  #Call AdviseDotNETVersion
 FunctionEnd
 
 ;--------------------------------

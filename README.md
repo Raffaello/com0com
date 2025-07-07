@@ -97,4 +97,5 @@ Signtool verify /pa /v /c com0com.cat com0com.inf
 > A certificate chain processed, but terminated in a root certificate
 - https://learn.microsoft.com/en-us/troubleshoot/windows-server/certificates-and-public-key-infrastructure-pki/valid-root-ca-certificates-untrusted
 
-
+> must be registered in windows hardware development program
+- https://learn.microsoft.com/en-us/windows-hardware/drivers/dashboard/hardware-submission-create
